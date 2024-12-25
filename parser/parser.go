@@ -98,7 +98,7 @@ func (p *Parser) parseArray() ast.ArrayNode {
 func (p *Parser) parseObject() ast.ObjectNode {
 	objectNode := ast.ObjectNode{
 		Token: p.currToken,
-		Items: make([]ast.KeyVal, 0),
+		Items: make(map[string]ast.Node),
 	}
 
 	p.eat(tokens.LEFT_CURLY)
@@ -107,29 +107,23 @@ func (p *Parser) parseObject() ast.ObjectNode {
 		return objectNode
 	}
 
-	objItem := ast.KeyVal{}
-
 	p.expect(tokens.STRING)
-	objItem.Key = p.currToken.Value
+  key := p.currToken.Value
 	p.eat(tokens.STRING)
 	p.eat(tokens.COLON)
 
-	objItem.Val = p.parseValue()
-	objectNode.Items = append(objectNode.Items, objItem)
+  objectNode.Items[key] = p.parseValue()
 
 	for p.currToken.TokenType == tokens.COMMA {
 		p.eat(tokens.COMMA)
 
-		objItem = ast.KeyVal{}
-
 		p.expect(tokens.STRING)
-		objItem.Key = p.currToken.Value
+		key = p.currToken.Value
 
 		p.eat(tokens.STRING)
 		p.eat(tokens.COLON)
 
-		objItem.Val = p.parseValue()
-		objectNode.Items = append(objectNode.Items, objItem)
+    objectNode.Items[key] = p.parseValue()
 	}
 
 	p.eat(tokens.RIGHT_CURLY)

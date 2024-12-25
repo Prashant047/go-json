@@ -38,14 +38,9 @@ type Array interface {
 	arrayNode()
 }
 
-type KeyVal struct {
-	Key string
-	Val Node
-}
-
 type ObjectNode struct {
 	Token tokens.Token
-	Items []KeyVal
+	Items map[string]Node
 }
 
 func (on *ObjectNode) objectNode() {}
