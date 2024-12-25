@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"go-json/lexer"
+	"log"
 	// "strconv"
 
 	// "go-json/tokens"
@@ -13,10 +14,6 @@ import (
 )
 
 func main() {
-
-  // TODO: IMPLEMENT FIELD SELECTION
-  // a.b.c[0]
-  // a.b.c[0].d
 
 	scanner := bufio.NewScanner(os.Stdin)
 	src := ""
@@ -32,19 +29,10 @@ func main() {
 
 	fmt.Println(AstToString(ast, "    "))
 
-	// number, err := strconv.ParseFloat("2e2000", 64)
-	// if err != nil {
-	//   fmt.Println(err)
-	// }
-	// fmt.Println(number)
-
-	// s, _ := json.MarshalIndent(ast, "", "  ")
-	// fmt.Println(string(s))
-
-	// tok := lex.GetNextToken()
-	// for tok.TokenType != tokens.EOF {
-	//   fmt.Println(tok)
-	//   tok = lex.GetNextToken()
-	// }
+	node, err := Select(ast, "e.f.[0]")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(AstToString(node, "    "))
 
 }

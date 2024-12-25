@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"go-json/ast"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -27,8 +29,8 @@ func AstToString(node ast.Node, indentChar string) string {
 			return n.Token.Value
 		case ast.ObjectNode:
 			n := node.(ast.ObjectNode)
-      mapLength := len(n.Items)
-      i := 0
+			mapLength := len(n.Items)
+			i := 0
 
 			res += "{\n"
 			for key, value := range n.Items {
@@ -38,7 +40,7 @@ func AstToString(node ast.Node, indentChar string) string {
 					res += ","
 				}
 				res += "\n"
-        i += 1
+				i += 1
 			}
 			res += strings.Repeat(indentChar, tab) + "}"
 		case ast.ArrayNode:
@@ -86,7 +88,46 @@ func TraverseAst(node ast.Node) {
 	}
 }
 
-func Select(rootNode ast.Node, query string) ast.Node {
-	// TODO: Implement
-	return nil
+func Select(rootNode ast.Node, query string) (ast.Node, error) {
+	pattern := `^((\w+|\[\d+\])\.)*(\w+|\[\d+\])$`
+	matched, err := regexp.MatchString(pattern, query)
+	if err != nil {
+		return nil, err
+	}
+
+	if !matched {
+		return nil, fmt.Errorf("invalid query string: %v", query)
+	}
+
+	keys := strings.Split(query, ".")
+	currNode := rootNode
+
+	for _, q := range keys {
+		if q[0] != '[' {
+			node, ok := currNode.(ast.ObjectNode)
+			if !ok {
+				return nil, fmt.Errorf("%v doesn't exist", q)
+			}
+			val, ok := node.Items[q]
+			if !ok {
+				return nil, fmt.Errorf("key %v doesn't exist", q)
+			}
+			currNode = val
+		} else {
+			node, ok := currNode.(ast.ArrayNode)
+			if !ok {
+				return nil, fmt.Errorf("%v is not an array", q)
+			}
+			index, err := strconv.Atoi(q[1 : len(q)-1])
+			if err != nil {
+				return nil, fmt.Errorf("error converting integer to index: %v", err)
+			}
+			if index < 0 || index >= len(node.Items) {
+				return nil, fmt.Errorf("index %v out of range of %v", index, len(node.Items))
+			}
+			val := node.Items[index]
+			currNode = val
+		}
+	}
+	return currNode, nil
 }
