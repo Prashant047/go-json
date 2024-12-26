@@ -106,11 +106,11 @@ func Select(rootNode ast.Node, query string) (ast.Node, error) {
 		if q[0] != '[' {
 			node, ok := currNode.(ast.ObjectNode)
 			if !ok {
-				return nil, fmt.Errorf("%v doesn't exist", q)
+        return nil, fmt.Errorf("invalid query: %v ; %v doesn't exist", query, q)
 			}
 			val, ok := node.Items[q]
 			if !ok {
-				return nil, fmt.Errorf("key %v doesn't exist", q)
+        return nil, fmt.Errorf("invalid query: %v ; key %v doesn't exist", query, q)
 			}
 			currNode = val
 		} else {
