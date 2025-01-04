@@ -18,7 +18,7 @@ A lightweight JSON parser written in Go that supports JSON formatting and select
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/go-json.git
+git clone https://github.com/Prashant047/go-json.git
 cd go-json
 go build
 ```
