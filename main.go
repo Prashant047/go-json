@@ -69,7 +69,6 @@ func execFormat(cliArgs []string) (string, error) {
 	} else {
 		scanner := bufio.NewScanner(os.Stdin)
 		src := ""
-
 		for scanner.Scan() {
 			line := scanner.Text()
 			src += line + string('\n')
